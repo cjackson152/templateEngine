@@ -155,10 +155,12 @@ class Employee {
         let engineers = '';
         let interns = '';
 
-        if(this.db.manager) {
-            managerProfile = new ManagerProfile(this.db.manager);
-            managerProfile = managerProfile.buildProfile();
-        }
+        if(this.db.managers) {
+            for (const manager of this.db.managers){
+                let managerProfile = new ManagerProfile(manager);
+                managerProfile = new ManagerProfile(this.db.manager);
+                managers += managerProfile.buildProfile();
+        }}
 
         if(this.db.engineers) {
             for (const engineer of this.db.engineers) {
