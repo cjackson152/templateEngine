@@ -25,7 +25,7 @@ class Employee {
     }
     async createEmployee() {
         let employee = 
-        inquirer
+        await inquirer
         .prompt([
             {
                 type: 'input',
@@ -42,6 +42,11 @@ class Employee {
                 message: 'Employee Email',
                 name: 'email'
             },
+            {
+                type: 'input',
+                message: 'Assign user ID',
+                name: 'employeeId'
+            }
         ]);
 
         switch (employee.title.toLowerCase()) {
@@ -62,7 +67,7 @@ class Employee {
     
     async phone(employee) {
         const managerDetails = 
-        inquirer
+       await inquirer
         .prompt([
             {
                 type: 'input',
@@ -77,7 +82,7 @@ class Employee {
 
     async gitHubUserName(employee) {
         const engineerDetails = 
-        inquirer
+       await inquirer
         .prompt([
             {
                 type: 'input',
@@ -108,18 +113,18 @@ class Employee {
 
     buildEmployee(employee) {
         let employeeInfo;
-        const {employeeName, email, position} = employee;
-        switch (employee.position.toLowerCase()) {
+        const {employeeName, employeeId, email, title} = employee;
+        switch (employee.title.toLowerCase()) {
             case 'manager':
-                const manager = new Manager(employeeName, position, email, employee.managerNumber);
+                const manager = new Manager(employeeName, employeeId, title, email, employee.managerNumber);
                 employeeInfo = manager;
                 break;
             case 'engineer':
-                const engineer = new Engineer(employeeName, position, email, employee.github);
+                const engineer = new Engineer(employeeName, employeeId, title, email, employee.github);
                 employeeInfo = engineer;
                 break;
             case 'intern':
-                const intern = new Intern(employeeName, position, email, employee.schoolName);
+                const intern = new Intern(employeeName, employeeId, title, email, employee.schoolName);
                 employeeInfo = intern;
                 break;
             default:
@@ -185,7 +190,7 @@ async init() {
     let input = ''
     do {
         const employeeInfo = this.buildEmployee(await this.createEmployee())
-        this.saveEmployee(employee);
+        this.saveEmployee(employeeInfo);
         input = 
         await inquirer
         .prompt([
@@ -202,5 +207,5 @@ async init() {
 }
 
 }
-const employee = new Employee();
-employee.init();
+const app = new Employee();
+app.init();
