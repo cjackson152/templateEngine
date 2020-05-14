@@ -6,15 +6,12 @@ const engineerProfile = require('./templates/engineerProf')
 const internProfile = require('./templates/internProf')
 const roster = require('./templates/rosterbuild')
 const inquirer = require("inquirer");
-const path = require("path");
 const fs = require("fs");
-
-const OUTPUT_DIR = path.resolve(__dirname, "output");
-const outputPath = path.join(OUTPUT_DIR, "team.html");
-
-const render = require("./lib/htmlRenderer");
+const http = require('http');
 
 
+
+// create place to hold employees
 class Employee {
     constructor() {
         this.db = {
@@ -23,6 +20,8 @@ class Employee {
         interns: [],
         }
     }
+
+// questions to build employees
     async createEmployee() {
         let employee = 
         await inquirer
@@ -30,25 +29,29 @@ class Employee {
             {
                 type: 'input',
                 message: 'Employee Name',
-                name: 'employeeName'
+                name: 'employeeName',
+                default: 'steve'
             },
             {
                 type: 'input', 
                 message: 'Employee Position',
-                name: 'title'
+                name: 'title',
+                default: 'Manager, Engineer, Intern'
             },
             {
                 type: 'input',
                 message: 'Employee Email',
-                name: 'email'
+                name: 'email',
+                default: '@thissite.com'
             },
             {
                 type: 'input',
                 message: 'Assign user ID',
-                name: 'employeeId'
+                name: 'employeeId',
+                default: '5 digit max'
             }
         ]);
-
+// cases for different employee positions
         switch (employee.title.toLowerCase()) {
             case 'manager':
                 employee = this.phone(employee);
@@ -64,7 +67,7 @@ class Employee {
         }
         return employee;
     }
-    
+ //assign phone number to manager   
     async phone(employee) {
         const managerDetails = 
        await inquirer
@@ -79,7 +82,7 @@ class Employee {
 
         return employee;
     }
-
+// assign github to engineer
     async gitHubUserName(employee) {
         const engineerDetails = 
        await inquirer
@@ -94,7 +97,7 @@ class Employee {
 
         return employee;
     }
-
+//assign school to intern
     async school(employee) {
         const internDetails =
         inquirer
@@ -110,7 +113,7 @@ class Employee {
         return employee;
 
     }
-
+// expands employees
     buildEmployee(employee) {
         let employeeInfo;
         const {employeeName, employeeId, email, title} = employee;
@@ -133,7 +136,7 @@ class Employee {
         }
         return employeeInfo;
     }
-
+// save employee to db
     saveEmployee(employeeInfo){
         switch (employeeInfo.getPosition().toLowerCase()){
             case 'manager':
@@ -149,7 +152,7 @@ class Employee {
                 break;
         }
     }
-
+// builds team
     buildTeam()  {
         let managers = '';
         let engineers = '';
@@ -164,7 +167,7 @@ class Employee {
 
         if(this.db.engineers) {
             for (const engineer of this.db.engineers) {
-                let engeineerProfile = new EngineerProfile(engineer);
+                let engineerProfile = new EngineerProfile(engineer);
                 engeineerProfile = engineerProfile.buildProfile();
                 engineers += engineerProfile;
             }
@@ -176,18 +179,37 @@ class Employee {
                 engineers += internProfile;
             }
         }
-        const team = managerProfile + engineers + interns;
+        const team = managers + engineers + interns;
         let roster = new roster(team);
+        roster = roster.buildTeam();
         return roster;
     }
-
-    buildRoster(roster) {
+// outputs team to roster
+    buildTeam(roster) {
         fs.writeFile('./output/team.html', roster, function(err){
             if (err) throw err;
         })
     
     }
+    
+// creates server to host roster
+    createServer(roster) {
 
+        fs.writeFile('./output/team.html', roster, function (err) {
+            if (err) throw err;
+        });
+
+
+        http.createServer(function (req, res) {
+            fs.readFile('./output/team.html', function (err, data) {
+                res.writeHead(200, { 'Content-Type': 'text/html' });
+                res.write(data);
+                res.end();
+            });
+
+        }).listen(8080);
+    }
+// 
 async init() {
     let input = ''
     do {
@@ -198,16 +220,19 @@ async init() {
         .prompt([
             {
                 type: 'input',
-                messager: 'end programm? type exit',
+                message: 'end programm? type exit. otherwise press enter',
                 name: 'exit'
 
             }
         ]);
 
     } while (!input.exit);
-    const roster = this.buildRoster();
+    const roster = this.buildTeam();
+
+    this.createServer(roster);
 }
 
 }
+// creates ability to create new employee
 const app = new Employee();
 app.init();

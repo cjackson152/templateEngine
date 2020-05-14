@@ -1,3 +1,4 @@
+// base constructor for all profiles
 class EmployeeProfile {
     constructor(employeeInfo){
         this.name = employeeInfo.name;
@@ -7,7 +8,7 @@ class EmployeeProfile {
 
         this.html;
     }
-
+// generates html
     createHtml() {
         this.html = 
         `<div class ='col col-md-4 col-lg-6 col-xl-6'>

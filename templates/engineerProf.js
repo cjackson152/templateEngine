@@ -1,3 +1,4 @@
+// extends for engineer profiles
 const EmployeeProfile = require('./employeeProf');
 class EngineerProf extends EmployeeProfile{
     constructor(engineer) {

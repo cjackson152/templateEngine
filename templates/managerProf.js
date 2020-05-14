@@ -1,3 +1,4 @@
+// template for building manager profile
 const EmployeeProfile = require('./employeeProf');
 class ManagerProf extends EmployeeProfile {
     constructor(manager) {
