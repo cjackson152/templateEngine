@@ -74,8 +74,9 @@ class Employee {
         .prompt([
             {
                 type: 'input',
-                message: 'number',
+                message: 'Managers phone number',
                 name: 'managerNumber',
+                default: '(###)-###-####'
             }
         ])
         employee.managerNumber = (await managerDetails).managerNumber;
@@ -90,7 +91,8 @@ class Employee {
             {
                 type: 'input',
                 message: 'GitHub UserName',
-                name: 'github'
+                name: 'github',
+                default: 'cjackson152'
             }
         ])
         employee.github = (await engineerDetails).github;
@@ -105,7 +107,8 @@ class Employee {
             {
                 type: 'input',
                 messager: 'Intern School',
-                name: 'schoolName'
+                name: 'schoolName',
+                default: 'UCI'
             }
         ]);
 
